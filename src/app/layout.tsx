@@ -41,7 +41,7 @@ export default async function RootLayout({ children }: Children) {
           // banner={banner}
           navbar={navbar}
           pageMap={await getPageMap()}
-          docsRepositoryBase="https://github.com/chilltemp/chillweb.net"
+          docsRepositoryBase="https://github.com/chilltemp/chillweb.net/blob/main"
           footer={footer}
           darkMode={false}
           nextThemes={{ defaultTheme: "dark" }}

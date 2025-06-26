@@ -1,0 +1,41 @@
+# Common Code
+
+
+```js filename="custom.js"
+/************************************
+ **             common             **
+ ************************************/
+
+ // based on: https://stackoverflow.com/a/34559316
+function replaceAllText(node, pattern, replacement) {
+  if (node.nodeType == 3) {
+    node.data = node.data.replaceAll(pattern, replacement);
+  }
+  if (node.nodeType == 1 && node.nodeName != "SCRIPT") {
+    for (var i = 0; i < node.childNodes.length; i++) {
+      replaceAllText(node.childNodes[i], pattern, replacement);
+    }
+  }
+}
+
+// Returns the first element that matches the selector and has the text content
+function querySelectorContent(selector, content) {
+  const targets = document.querySelectorAll(selector);
+  for (const target of targets) {
+    if (target.textContent && target.textContent.includes(content)) {
+      return target;
+    }
+  }  
+}
+
+// Run a function at startup and whenever a tab is clicked.
+// Because, items within each tab are recreated when you change tabs.
+// It's probably a good idea to use attributes or class names to ensure you don't act on the same element more than once.
+function runNowAndTabClick(fn) {
+  document.getElementById('tabs').addEventListener('click', function() {
+    fn();
+  });
+
+  fn();  
+}
+```

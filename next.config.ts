@@ -9,6 +9,7 @@ const withNextra = nextra({
       theme: "dark-plus",
     },
   },
+  defaultShowCopyCode: true,
 });
 
 // Export the final Next.js config with Nextra included

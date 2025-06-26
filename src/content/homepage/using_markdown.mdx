@@ -5,9 +5,47 @@ title: Using Markdown
 
 This adds markdown support for Service Descriptions and Greeting Widgets. You can add other sections by editing the parameters of `initMarkdown()`.
 
-![image](https://github.com/user-attachments/assets/2698a0a0-779b-4056-b4dd-62d039bdc1ea)
+## Sample 
+![homepage markdown sample](./img/homepage-markdown.png)
 
-```javascript copy filename="custom.js"
+```yaml filename="services.yaml"
+    - Syncthing:
+        href: https://syncthing.hairball.******.net
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/syncthing.svg
+        # container: UptimeKuma
+        siteMonitor: http://192111.111.111.111:8384
+        description: |-
+          Sync /appdata/homepage
+          https://syncthing.hairball.******.net
+          `http://111.111.111.111:8384`
+
+    - Ad Guard Home:
+        href: https://adguard.hairball.******.net/
+        icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/adguard-home.svg
+        siteMonitor: http://111.111.111.111
+        description: |-
+          ![instance badge](https://img.shields.io/badge/secondary-mediumpurple?style=flat)Network-wide Ad Blocking (DNS)
+
+          https://adguard.hairball.******.net
+          `http://111.111.111.111`
+        widget:
+          type: adguard
+          url: https://adguard.hairball.******.net
+          username: "******"
+          password: "{{HOMEPAGE_VAR_ADGUARD_FURBALL_KEY}}"
+          fields:
+            - queries
+            - blocked
+            # - filtered
+            - latency
+```
+## The Code
+
+> [!NOTE]
+>
+> Needs `runNowAndTabClick()` from [common code](./common)
+
+```javascript filename="custom.js"
 /************************************
  **            Markdown            **
  ************************************/
@@ -18,18 +56,13 @@ This adds markdown support for Service Descriptions and Greeting Widgets. You ca
 function markdownDescriptions(options) {
   // https://github.com/markdown-it/markdown-it
   // https://markdown-it.github.io/
-  const script =
-    `
+  const script = `
   import markdownIt from 'https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/+esm';
   import externalLinks from 'https://cdn.jsdelivr.net/npm/markdown-it-external-links@0.0.6/+esm';
   const md = markdownIt({
       breaks: true,
-      html: ` +
-    !!options.html +
-    `,
-      linkify: ` +
-    !!options.linkify +
-    `,
+      html: ` + !!options.html + `,
+      linkify: ` + !!options.linkify + `,
       typographer: true,
     })
     .use(externalLinks, {
@@ -39,9 +72,7 @@ function markdownDescriptions(options) {
     });
   
 
-  const nodes = document.querySelectorAll('` +
-    options.selector +
-    `') || [];
+  const nodes = document.querySelectorAll('` + options.selector + `') || [];
   for (const node of nodes) {
     try {
       if (node.classList.contains('markdown-wrapper')) {
@@ -66,45 +97,34 @@ function markdownDescriptions(options) {
   }
   `;
 
-  const node = document.createElement("script");
-  node.setAttribute("type", "module");
+  const node = document.createElement('script');
+  node.setAttribute('type', 'module');
   node.innerText = script;
   document.body.appendChild(node);
 }
 
 function applyMarkdown(options) {
   for (const opts of options) {
-    markdownDescriptions(opts);
+    markdownDescriptions(opts);      
   }
-}
-
-function initMarkdown(options) {
-  document.getElementById("tabs").addEventListener("click", function () {
-    console.log("Clicked using addEventListener");
-    applyMarkdown(options);
-  });
-
-  applyMarkdown(options);
 }
 
 /************************************
  **              MAIN              **
  ************************************/
 
-initMarkdown([
-  {
-    selector: ".information-widget-greeting span",
-    linkify: false,
-    html: false,
-  },
-  { selector: ".service-description", linkify: true, html: false },
-]);
+runNowAndTabClick(function () {
+  applyMarkdown([
+    {selector: '.information-widget-greeting span', linkify: false, html: false},
+    {selector: '.service-description',              linkify: true,  html: false},
+  ]);
+})
 ```
 
 
 
-```css copy filename="custom.css"
-/* Formatting for markdown blocks, since default element formating has been removed. */
+```css filename="custom.css"
+/* Formatting for markdown blocks, since default element formatting has been removed. */
 .markdown-wrapper {
   /* white-space: pre-wrap; */
 
@@ -170,27 +190,4 @@ initMarkdown([
     margin-left: 4px;
   }
 }
-```
-
-### Sample usage
-
-```yaml copy filename="widgets.yaml"
-- greeting:
-    text_size: xs
-    text: |-
-      # redacted.net
-
-      `{MY_IP}`
-```
-
-
-```yaml copy filename="services.yaml"
-- Ad Guard Home:
-    href: https://adguard.hairball.redacted.net/
-    icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/adguard-home.svg
-    description: |-
-      ![instance badge](https://img.shields.io/badge/primary-purple?style=flat)Network-wide Ad Blocking (DNS)
-
-      https://adguard.hairball.redacted.net
-      `http://111.111.111.111`
 ```

@@ -1,0 +1,64 @@
+# Sanitize Button
+
+Add a button to the page (bottom right) so that you can quickly sanitize domain names, IP addresses, etc.  Allowing you to publish screen shots without reveling too many details of your network.
+
+Replacement slugs have been updated to `192.0.2.0` and `example.com` as per RFC [5737](https://www.rfc-editor.org/rfc/rfc5737) & [2606](https://www.rfc-editor.org/rfc/rfc2606.html)
+
+## Sample
+
+![homepage sanitize sample](./img/homepage-full.png)
+
+
+
+## The Code
+> [!NOTE]
+>
+> Needs `replaceAllText()` from [common code](./common)
+
+```javascript filename="custom.js" /your-domain-here\\.example/
+/************************************
+ **            Sanitize            **
+ ************************************/
+
+function sanitizeIdentifiers(options) {
+  for (const opts of options) {
+    const targets = !!opts.selector
+      ? document.querySelectorAll(opts.selector)
+      : [document.body];
+
+    for (const target of targets) {
+      replaceAllText(target, opts.pattern, opts.replacement);
+    }
+  }
+}
+
+function initSanitizeButton(options) {
+  // Adds a button to the bottom right pf the page
+  const button = document.createElement('button');
+  button.innerHTML = 'sanitize';
+  button.className = 'w-24 rounded-md m-1 bg-theme-300/20 dark:bg-white/10 text-theme-700 dark:text-theme-200 cursor-pointer';
+  button.onclick = function(){
+    sanitizeIdentifiers(options);
+    return false;
+  };
+
+  document.querySelector('#revalidate').after(button);
+}
+
+
+/************************************
+ **              MAIN              **
+ ************************************/
+
+initSanitizeButton([
+  // My domain
+  {pattern: /your-domain-here\.example/mgi, replacement: 'example.com'},
+  // Unraid alias domains
+  {pattern: /https:\/\/.*?\.myunraid.net/mgi, replacement: 'http://redacted.myunraid.net'},
+  // IP addresses
+  {pattern: /\b((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}/mg, replacement: '192.0.2.0' },
+  // Calendar entries
+  {selector: '.service[data-name="agenda"] .flex-row .flex-row div', pattern: /[a-z]/mgi, replacement: '*'}
+]);
+```
+Replace `your-domain-here\.example` with your domain name, using regex escapes (`.` becomes `\.`).
