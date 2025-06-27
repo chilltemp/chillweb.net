@@ -1,0 +1,50 @@
+# External IP
+
+Replaces `{MY_IP}` in a Greeting Widget with your public IP address.
+
+## Sample
+
+![homepage sanitize sample](./img/ip.png)
+
+```yaml filename="widgets.yaml"
+- greeting:
+    text_size: xs
+    text: |-
+        # example.com
+
+        `{MY_IP}`
+```
+
+## The Code
+> [!NOTE]
+>
+> Needs `replaceAllText()` from [common code](./common)
+
+```javascript filename="custom.js"
+ /************************************
+ **      External IP Address       **
+ ************************************/
+function fetchExternalIP() {
+  fetch('https://api.ipify.org?format=json') // responds with json
+    .then((response) => response.json())
+    .then((data) => {
+
+      const targets = document.querySelectorAll('.information-widget-greeting span');
+      for (const target of targets) {
+        replaceAllText(target, '{MY_IP}', data.ip);
+      }
+      
+    })
+    .catch((error) => {
+      console.error('Error fetching IP address:', error);
+    });
+}
+
+
+/************************************
+ **              MAIN              **
+ ************************************/
+
+fetchExternalIP();
+```
+

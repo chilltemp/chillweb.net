@@ -1,0 +1,68 @@
+# Round Milliseconds 
+
+Round milliseconds in Service Widgets
+
+## Sample
+
+| ![homepage sanitize sample](./img/adguard-no-rounding.png) | ![homepage sanitize sample](./img/adguard-rounded.png) |
+|:--:|:--:| 
+| *Before* | *After* |
+
+
+## The Code
+
+```javascript filename="custom.js"
+/************************************
+ **   Round Widget Milliseconds    **
+ ************************************/
+function parseNumber(value, locales = navigator.languages) {
+  // https://stackoverflow.com/a/45309230
+  const example = Intl.NumberFormat(locales).format('1.1');
+  const cleanPattern = new RegExp(`[^-+0-9${example.charAt(1)}]`, 'g');
+  const cleaned = value.replace(cleanPattern, '');
+  const normalized = cleaned.replace(example.charAt(1), '.');
+
+  return parseFloat(normalized);
+}
+
+function roundMilliseconds() {
+  const elements = document.querySelectorAll('.service-block div');
+
+  for (const el of elements) {
+    let content = el.textContent;
+    const millisecondsRx = /^[\d,]+\.\d+ ms$/;
+    /*
+    56,809
+    Queries
+    3,589.0 ms      <== MATCHES
+    Blocked
+    10.43 ms        <== MATCHES
+    Latency
+    123 ms          <== no match, it's already a whole number
+    12,335 ms       <== no match, it's already a whole number
+    xyz 21.90 ms    <== no match, has unexpected characters
+    */
+    if (millisecondsRx.test(el.textContent)) {
+      try {
+        const ms = Math.round(parseNumber(content));
+        content = Intl.NumberFormat().format(ms) + ' ms';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    if (el.textContent !== content) {
+      el.textContent = content;
+    }
+  }
+
+  setTimeout(roundMilliseconds, 500);
+}
+
+/************************************
+ **              MAIN              **
+ ************************************/
+
+roundMilliseconds();
+```
+
