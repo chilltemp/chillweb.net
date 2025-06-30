@@ -47,7 +47,7 @@ function styleFavorites() {
   const targetElem = querySelectorContent('.information-widget-greeting', '{FAVORITES}')
   if(targetElem && sourceElem) {
     const wrapper = document.createElement('div');
-    wrapper.className = 'bookmark-favorites-wrapper flex flex-row flex-wrap justify-between m-5 mt-0 mb-0';
+    wrapper.className = 'widget-container bookmark-favorites-wrapper flex flex-row flex-wrap justify-between m-5 mt-0 mb-0';
     wrapper.appendChild(bookmarksElem);
     targetElem.after(wrapper);
     targetElem.classList.add('hidden');
@@ -68,6 +68,7 @@ styleFavorites();
 /* Formatting for the bookmarks-group 'Favorites' */
 .bookmark-favorites-wrapper {
     margin-top: 0;
+    flex-grow: 1;
 }
 .bookmark-favorites { 
     button { display: none; }
@@ -78,5 +79,11 @@ styleFavorites();
         flex-flow: wrap;
     }
 }
+
+/* optional, reset widget alignment */
+#widgets-wrap {
+    justify-content: start;
+}
+
 ```
 
