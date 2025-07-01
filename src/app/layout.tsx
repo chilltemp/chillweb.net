@@ -6,6 +6,7 @@ import "nextra-theme-docs/style.css";
 import "./styles.css";
 import { Children } from "../interfaces";
 import { Analytics } from "@vercel/analytics/next";
+import Image from "next/image";
 
 export const metadata = {
   // Define your metadata here
@@ -15,7 +16,18 @@ export const metadata = {
 // const banner = <Banner storageKey="some-key">Nextra 4.0 is released 🎉</Banner>;
 const navbar = (
   <Navbar
-    logo={<b>chillweb.net</b>}
+    logo={
+      <>
+        <Image
+          className="logo"
+          src="/enc/code.svg"
+          alt="Logo"
+          width={50}
+          height={40}
+        />{" "}
+        <b>chillweb.net</b>
+      </>
+    }
     // ... Your additional navbar options
   />
 );
@@ -35,6 +47,21 @@ export default async function RootLayout({ children }: Children) {
       // ... Your additional head options
       >
         {/* Your additional tags should be passed as `children` of `<Head>` element */}
+        <link
+          rel="icon"
+          type="image/png"
+          href="/enc/favicon-96x96.png"
+          sizes="96x96"
+        />
+        <link rel="icon" type="image/svg+xml" href="/enc/favicon.svg" />
+        <link rel="shortcut icon" href="/enc/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/enc/apple-touch-icon.png"
+        />
+        <meta name="apple-mobile-web-app-title" content="chillweb.net" />
+        <link rel="manifest" href="/enc/site.webmanifest" />
       </Head>
       <body>
         <Layout

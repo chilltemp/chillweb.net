@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 _pagefind/
+.env*.local
+
+# files that should be encrypted in git
+/public/enc/*
+!/public/enc/*.enc

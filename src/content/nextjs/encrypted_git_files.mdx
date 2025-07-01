@@ -1,0 +1,88 @@
+# Encrypted files in git
+
+I needed a way to secure files in git, while making them available for the build.  This technique is intended to secure secrets such as certificates and other files that don't fit in environment variables.
+
+I'm currently only using this for images that will be on my public site.  Strange?  Yeah... I purchased licenses to use these files on the web, but not distribute them.  So I can't include them in a public git repo.
+
+## Usage
+
+```json filename="package.json"
+  "scripts": {
+    "postinstall": "sh decrypt-files.sh ./public/enc",
+    "encrypt": "sh encrypt-files.sh ./public/enc",
+  }
+```
+
+## The Code
+```sh filename="encrypt-files.sh" 
+#! /bin/sh
+
+if [[ -z "$1" ]]; then
+    echo ERROR: Argv \$1 must be a path
+    exit 1
+fi
+FILE_PATH=$1
+
+if [[ -z "$IMAGE_ENC_KEY" ]] && [ -e ./.env.local ]; then
+    source ./.env.local
+    export IMAGE_ENC_KEY=$IMAGE_ENC_KEY
+fi
+
+if [[ -z "$IMAGE_ENC_KEY" ]]; then
+    echo ERROR: Env var IMAGE_ENC_KEY not set
+    exit 1
+fi
+
+# echo $IMAGE_ENC_KEY
+
+for FILE in $FILE_PATH/*; do
+    filename=$(basename -- "$FILE")
+    extension="${filename##*.}"
+
+    if [ "$extension" == "enc" ]; then
+      continue
+    fi
+    
+    NEW_FILE=$FILE
+    NEW_FILE+=".enc"
+    echo "$FILE ==> $NEW_FILE"
+    openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 1000000 -salt -in $FILE -out $NEW_FILE -pass env:IMAGE_ENC_KEY
+
+done
+```
+
+```sh filename="decrypt-files.sh"
+#! /bin/sh
+
+if [[ -z "$1" ]]; then
+    echo ERROR: Argv \$1 must be a path
+    exit 1
+fi
+FILE_PATH=$1
+
+if [[ -z "$IMAGE_ENC_KEY" ]] && [ -e ./.env.local ]; then
+    source ./.env.local
+    export IMAGE_ENC_KEY=$IMAGE_ENC_KEY
+fi
+
+if [[ -z "$IMAGE_ENC_KEY" ]]; then
+    echo ERROR: Env var IMAGE_ENC_KEY not set
+    exit 1
+fi
+
+# echo $IMAGE_ENC_KEY
+
+for FILE in $FILE_PATH/*; do
+    filename=$(basename -- "$FILE")
+    extension="${filename##*.}"
+
+    if [ "$extension" != "enc" ]; then
+      continue
+    fi
+    
+    NEW_FILE=${FILE:0:${#FILE}-4}
+    echo "$FILE ==> $NEW_FILE"
+    openssl enc -d -aes-256-cbc -md sha512 -pbkdf2 -iter 1000000 -salt -in $FILE -out $NEW_FILE -pass env:IMAGE_ENC_KEY
+
+done
+```

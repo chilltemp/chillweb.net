@@ -27,3 +27,8 @@ h3 {
     --x-color-primary-900: var(--color-green-900);
     --x-color-primary-950: var(--color-green-950);
 }
+
+.logo {
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg);
+    margin-right: 1em;
+}

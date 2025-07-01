@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "sh decrypt-files.sh ./public/enc",
+    "encrypt": "sh encrypt-files.sh ./public/enc",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
