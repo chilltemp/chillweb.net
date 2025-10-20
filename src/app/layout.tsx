@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: Children) {
           pageMap={await getPageMap()}
           docsRepositoryBase="https://github.com/chilltemp/chillweb.net/blob/main"
           footer={footer}
-          darkMode={false}
+          darkMode={true}
           nextThemes={{ defaultTheme: "dark" }}
           // ... Your additional layout options
         >

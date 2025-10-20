@@ -1,0 +1,14 @@
+# Burn DVD
+## Create ISO
+```sh
+# List drives to find the DVD drive.  Mine was /dev/disk4
+diskutil list
+
+sudo diskutil unmountDisk /dev/disk4
+hdiutil makehybrid -iso -joliet -o IMAGE_NAME.iso /dev/disk4
+```
+
+## Burn ISO
+```sh
+hdiutil burn IMAGE_NAME.iso 
+```
